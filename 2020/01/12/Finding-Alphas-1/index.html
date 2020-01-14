@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-small.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Alpha,量化分享," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="注： 本文主要参考 Finding Alphas: A Quantitative Approach to Building Trading Strategies (2th).Igor_Tulchinsky_et_al.  (2020)文档见文末  距离第一次听到Igor的名字，已经过去5年多。WQ被诟病的地方很多，但不得不承认，在多因子的路上，给了很多人启蒙，并且，开放了大量的资源在普及这套国外">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Finding Alphas - glance at basic concepts">
+<meta property="og:url" content="https://jchenmir.github.io/2020/01/12/Finding-Alphas-1/index.html">
+<meta property="og:site_name" content="Yggdrasil">
+<meta property="og:description" content="注： 本文主要参考 Finding Alphas: A Quantitative Approach to Building Trading Strategies (2th).Igor_Tulchinsky_et_al.  (2020)文档见文末  距离第一次听到Igor的名字，已经过去5年多。WQ被诟病的地方很多，但不得不承认，在多因子的路上，给了很多人启蒙，并且，开放了大量的资源在普及这套国外">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jchenmir.github.io/2020/01/12/Finding-Alphas-1/TAP.jpg">
+<meta property="article:published_time" content="2020-01-12T07:29:09.000Z">
+<meta property="article:modified_time" content="2020-01-14T09:40:18.273Z">
+<meta property="article:author" content="陈小米MC">
+<meta property="article:tag" content="Alpha">
+<meta property="article:tag" content="量化分享">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jchenmir.github.io/2020/01/12/Finding-Alphas-1/TAP.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jchenmir.github.io/2020/01/12/Finding-Alphas-1/"/>
+
+
+
+
+
+  <title>Finding Alphas - glance at basic concepts | Yggdrasil</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yggdrasil</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">See you later, alligator.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-blogs">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Blogs
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about-me">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About me
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jchenmir.github.io/2020/01/12/Finding-Alphas-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="陈小米MC">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/me.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yggdrasil">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Finding Alphas - glance at basic concepts</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-12T15:29:09+08:00">
+                2020-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%87%8F%E5%8C%96%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">量化分享</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2.7k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+	  
+		<span>&nbsp; | &nbsp;
+		<span id="busuanzi_value_page_pv" ></span>次阅读
+		</span>    
+	  
+
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>注： 本文主要参考 <em>Finding Alphas: A Quantitative Approach to Building Trading Strategies (2th).Igor_Tulchinsky_et_al.  (2020)</em><br>文档见文末</p>
+</blockquote>
+<p>距离第一次听到Igor的名字，已经过去5年多。WQ被诟病的地方很多，但不得不承认，在多因子的路上，给了很多人启蒙，并且，开放了大量的资源在普及这套国外对冲基金行业已经发展成熟的模式。</p>
+<p>拿到这本书的第二版，目录上看到很多熟悉的名字。从业这几年，在个人选择和精力投入上有些偏颇，打算慢慢空下来，认真读一读、想一想。</p>
+<p>大的目录分了三部分:</p>
+<ul>
+<li>PART I INTRODUCTION</li>
+<li>PART II DESIGN AND EVALUATION</li>
+<li>PART III EXTENDED TOPICS</li>
+</ul>
+<p>目前看完partII, 内容较多，关于前两个part的内容，将拆四篇介绍：</p>
+<ul>
+<li>(1) glance at basic concepts</li>
+<li>(2) alpha risks</li>
+<li>(3) GA &amp; ML alphas</li>
+<li>(4) rs toolkit</li>
+<li>(5) tbd…</li>
+</ul>
+<p>顺序上与书目录保持一致，也会照书目录捋一遍，记录些关键词句，方便大家参照。夹杂一些自己的看法。</p>
+<hr>
+<p>本篇glance at basic concepts，将书中较大篇幅介绍基础的alpha思想，体系，框架设计的部分，简要融合和介绍。<br>包括：</p>
+<ul>
+<li><a href="#4">alpha包含哪些内容(4)</a></li>
+<li><a href="#5">5dr的简单例子(5)</a></li>
+<li><a href="#6">alpha和data的关系(6)</a></li>
+<li><a href="#7">如何看待换手(7)</a></li>
+<li><a href="#8">相关性分析(8)</a></li>
+<li><a href="#9">回测的过拟合和偏差问题(9,10)</a></li>
+<li><a href="#11">TAP框架(11)</a></li>
+<li><a href="#12">提高鲁棒性(12)</a></li>
+</ul>
+<hr>
+<h3 id="PART-I-INTRODUCTION"><a href="#PART-I-INTRODUCTION" class="headerlink" title="PART I INTRODUCTION"></a>PART I INTRODUCTION</h3><blockquote>
+<p>这部分简单介绍了alpha体系和研究alpha的一些方向、原则性指导。cutting losses部分讲了alpha的失效，和止损的必要性。</p>
+</blockquote>
+<h4 id="1-Introduction-to-Alpha-Design"><a href="#1-Introduction-to-Alpha-Design" class="headerlink" title="1 Introduction to Alpha Design"></a>1 Introduction to Alpha Design</h4><h4 id="2-Perspectives-on-Alpha-Research"><a href="#2-Perspectives-on-Alpha-Research" class="headerlink" title="2 Perspectives on Alpha Research"></a>2 Perspectives on Alpha Research</h4><h4 id="3-Cutting-Losses"><a href="#3-Cutting-Losses" class="headerlink" title="3 Cutting Losses"></a>3 Cutting Losses</h4><p>principle of unrule. cutting losses means abandoning rules that no longer work.</p>
+<ul>
+<li>A drawdown exceeds the typical drawdowns observed previously.</li>
+<li>The strategy’s Sharpe ratio falls significantly.</li>
+<li>Rules that were initially observed in historical simulation are no longer valid in live trading.</li>
+</ul>
+<hr>
+<h3 id="PART-II-DESIGN-AND-EVALUATION"><a href="#PART-II-DESIGN-AND-EVALUATION" class="headerlink" title="PART II DESIGN AND EVALUATION"></a>PART II DESIGN AND EVALUATION</h3><h4 id="4-Alpha-Design"><a href="#4-Alpha-Design" class="headerlink" title="4 Alpha Design"></a><span id="4">4 Alpha Design</span></h4><blockquote>
+<p>Data -&gt; Universe -&gt; Frequency -&gt; Alpha Value -&gt; Evaluate Alpha</p>
+</blockquote>
+<h5 id="Data"><a href="#Data" class="headerlink" title="Data"></a><em>Data</em></h5><p>Alphas are fueled by data. The edge sought for an alpha may come from identifying high-quality pieces of publicly available data, superior processing of the data or both.</p>
+<ul>
+<li>Prices and volumes. Technical analysis or regression models may be built based on this data.</li>
+<li>Fundamentals. By automating the analysis of key metrics for each company, you can build alphas that typically have very low turnover.</li>
+<li>Macroeconomic data, such as GDP numbers and employment rates,that have market-wide effects upon their release.</li>
+<li>Text, such as Federal Open Market Committee minutes, company filings, papers, journals, news, or social media.</li>
+<li>Multimedia, notably relevant videos or audio. There are mature techniques to process such data. for example, converting audio into text that can be used to build models.</li>
+</ul>
+<p>Sometimes data sources aren’t used to generate a directional signal but to attempt to reduce noise in predictions and refine other alpha signals.</p>
+<ul>
+<li>Risk factor models. By controlling risk exposure or eliminating exposure to some risk factors, one can seek to improve the alpha’s performance.</li>
+<li>Relationship models, such as instruments that typically are correlated with each other to some extent. Some may lead or lag others, thus generating potential opportunities for arbitrage.</li>
+</ul>
+<h5 id="Universe"><a href="#Universe" class="headerlink" title="Universe"></a><em>Universe</em></h5><h5 id="Freq"><a href="#Freq" class="headerlink" title="Freq"></a><em>Freq</em></h5><ul>
+<li>Tick. New predictions are triggered by events such as a trade in the market.</li>
+<li>Intraday. Predictions are generated multiple times at predetermined points during the day.</li>
+<li>Daily. One prediction per day, of which there are several typical subtypes:</li>
+<li>Delay 1. Only data available before the current trading day may be used to make a prediction.</li>
+<li>Delay 0 snapshot. Data before a specific time may be used to make a prediction.</li>
+<li>MOO/MOC. Predictions are tied to the opening or closing auction.</li>
+<li>Weekly or monthly.</li>
+</ul>
+<h5 id="Alpha-Value"><a href="#Alpha-Value" class="headerlink" title="Alpha Value"></a><em>Alpha Value</em></h5><p>test of alpha value is how much risk-adjusted profit the alpha adds to the strategy in which it is trading. In practice, this is difficult to precisely measure because:</p>
+<ul>
+<li>There is no canonical strategy in which an alpha may be used, and the exact strategy in which the alpha will be used may not be known at the time of its design.</li>
+<li>There are often nonlinear effects in the combination that make it difficult to precisely attribute profit to individual alphas.</li>
+</ul>
+<h5 id="Evaluate-Alpha"><a href="#Evaluate-Alpha" class="headerlink" title="Evaluate Alpha"></a><em>Evaluate Alpha</em></h5><blockquote>
+<p>按流动性切片，按univ切片，按long,short切片</p>
+</blockquote>
+<ul>
+<li>IR: over a five-year period, would be 1.0  </li>
+<li>BP: 5</li>
+<li>Corr with others<ul>
+<li>More than 0.7: Too high unless the alpha is significantly better than the existing alpha.</li>
+<li>0.5 to 0.7: Borderline. The alpha should be exceptional in some other metric.</li>
+<li>0.3 to 0.5: Generally acceptable.</li>
+<li>Less than 0.3: Good.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="5-How-to-Develop-an-Alpha-A-Case-Study"><a href="#5-How-to-Develop-an-Alpha-A-Case-Study" class="headerlink" title="5 How to Develop an Alpha: A Case Study"></a><span id="5">5 How to Develop an Alpha: A Case Study</span></h4><blockquote>
+<p>讲了一个5dr例子，包括简单的变换op如何操作</p>
+</blockquote>
+<hr>
+<h4 id="6-Data-and-Alpha-Design"><a href="#6-Data-and-Alpha-Design" class="headerlink" title="6 Data and Alpha Design"></a><span id="6">6 Data and Alpha Design</span></h4><p><strong>data itself can inspire alpha ideas</strong>– every alpha idea is associated with some sort of data</p>
+<p><strong>new dataset</strong>, it will inspire new ideas and new ways of using the dataset. Ideally, the alpha signals found in the new dataset will have a low correlation to signals that are based on different types of data. By using new data, we may achieve both performance improvement and diversification.</p>
+<blockquote>
+<p>vendor提供的data的分类</p>
+</blockquote>
+<ul>
+<li>data is simple, vendors may provide only the raw data they have collected, such as price and volume</li>
+<li><strong>do parsing and processing</strong> - unstructured yet sophisticated data, such as news, Twitter posts, and so on, vendors typically apply natural language processing techniques to analyze the content of the raw data</li>
+<li>even sell alpha models directly</li>
+</ul>
+<p><em>Data validation</em><br>check the data’s usability.</p>
+<ul>
+<li>delivery time: data is useless if it does not have a timestamp -&gt; forward-looking bias.</li>
+<li>ensure that the data can support alpha production: data producer will cease to generate the data</li>
+<li>survival bias: some out-of-sample testing period for the dataset might be useful. Out-of-sample testing is helpful because it is not conducted in a controlled universe and strong performance is a good indicator of an alpha’s robustness<blockquote>
+<p>关注数据的时间戳，确保数据可以日常稳定生产，以及提供model的vendor要留一段os来避免幸存偏差。</p>
+</blockquote>
+</li>
+</ul>
+<p><em>removing outliers in the alpha code</em></p>
+<p><em>many interesting ideas</em></p>
+<ul>
+<li>Kamstra et al. (2002) presented a “SAD” (seasonal affective disorder) effect: stock market returns vary seasonally with the length of the day. </li>
+<li>Hirshleifer and Shumway (2003) found that the morning sunshine at a country’s leading stock exchange could predict the market index returns that day. </li>
+<li>Preis et al. (2013) made use of Google trend data to develop an alpha that beat the market significantly: a 326% return versus a 16% return.</li>
+</ul>
+<p>More data is always better, as long as we can handle it. It is very challenging to manage the rapid growth of data. There may be cost con- siderations for storage devices, computing machines, customized data- bases, and so forth. Yet, if data can be used correctly and efficiently, we can target better alphas.</p>
+<hr>
+<h4 id="7-Turnover"><a href="#7-Turnover" class="headerlink" title="7 Turnover"></a><span id="7">7 Turnover</span></h4><blockquote>
+<p>交易成本是现实的一个约束，本篇比较了不同换手的alpha在纳入交易成本之后的实际表现，与不考虑交易成本得到的结果差异。</p>
+</blockquote>
+<p>real-world constraints. We assume liquidity is endless, trading is free, and there are no other market participants but ourselves.</p>
+<p>The ability to take advantage of rapidly changing information and react accordingly typically increases the quality of the prediction. Similarly, in alpha research we expect a higher-turnover alpha with a shorter fore- cast horizon to have better predictive power than a lower-turnover, longer-term alpha.</p>
+<p>an individual alpha is too weak and unlikely to perform well as a strategy on its own; to build a potentially profitable trading strategy, a portfolio manager generally needs to combine multiple alphas. Combining many diverse alphas results in a stronger, more informed prediction that is more likely to overcome transaction costs and other trading constraints.</p>
+<blockquote>
+<p>换手的来源，和降低换手的方法<br>(1) not all types of information change at the same rate, and (2) not all information is particularly useful.This suggests that the alpha may be trading into the position very quickly and potentially trading out too soon.<br>Thus, even naturally low-turnover alphas may have room for improvement by smoothing the data and spreading out the trading over a longer period.<br>First, it is useful to determine whether very large values in the data are meaningful or if they are just anomalies (i.e. outliers).</p>
+</blockquote>
+<ul>
+<li>clamp (data, min_value, max_value)</li>
+<li>percentile of the data distribution or some number of standard deviations.</li>
+</ul>
+<blockquote>
+<p>处理一些数据的微小变化带来的不必要的换手<br><em>smallest changes in the data that cause unnecessary trading.</em>assumption here is that these small movements are just noise that we need to remove from our data.</p>
+</blockquote>
+<ul>
+<li><p>hump<br>require the change to exceed a threshold (or “hump”) and otherwise preserve the previous value.</p>
+</li>
+<li><p>decay<br>trades can be smoothed (decayed) rather than stopped completely by using an exponential moving average or a simple or weighted moving average</p>
+</li>
+</ul>
+<blockquote>
+<p>tvr的分布<br>低换手的alpha可能在时序上存在换手尖峰<br>earnings momentum alpha, meanwhile, will likely exhibit a cyclical turnover pattern, with spikes in activity around the most common times of earnings announcements.<br>examining whether the trades on the lower-turnover days are generating any meaningful value or should be filtered out, or whether the spikes can be smoothed out by gradually trading into the position over several days rather than making abrupt (binary) trades.</p>
+</blockquote>
+<blockquote>
+<p>不同alpha间的cross效应，可以抵消一部分换手。单个alpha不必要加入这类限制条件去筛选。<br>A universe with more instruments will naturally have a higher probability of crossing. The frequency of crossing also depends on the turnover profile of the alphas. Alphas with sparser trading profiles will have fewer crossing opportunities, on average, than those with more uniform trading.</p>
+</blockquote>
+<p>the exercise of testing and analyzing an alpha’s performance across different liquidity sets and under varying turnover levels can provide insights and confidence in that alpha’s robustness and tradability</p>
+<h4 id="8-Alpha-Correlation"><a href="#8-Alpha-Correlation" class="headerlink" title="8 Alpha Correlation"></a><span id="8">8 Alpha Correlation</span></h4><p>The correlation among alphas can be computed based on alpha PnL correlation or alpha value correlation.</p>
+<p><strong>ALPHA PnL CORRELATION</strong></p>
+<ul>
+<li>Pearson Correlation Coefficient</li>
+<li>Temporal-Based Correlation</li>
+<li>larger weights are assigned to recent PnL values</li>
+<li>Generalized Correlation: we will consider nonlinear transformations, which typically modify the correlation between two variables.</li>
+</ul>
+<p><strong>ALPHA VALUE CORRELATION</strong></p>
+<p>it is enough to take d=20 days, so the alpha vector is of dimension 20 * the number of instruments in the universe.</p>
+<ul>
+<li>histogram of correlation : correlation density distribution is more important than a singular maximum value or even the average correlation value.</li>
+<li><strong>T-corr</strong> is defined as the sum of the correlations of the given alpha with all other alphas.</li>
+<li><strong>scaled average score</strong></li>
+</ul>
+<p>Two alphas may have highly correlated historical performance, but the future is uncertain and it is not always clear which one may add more value in the future.<br>using all these alphas at once may provide a more complete view of the idea and make the overall strategy more robust.</p>
+<blockquote>
+<p>对于同一个single data，相关性可能很高，但每个alpha描述的侧面不一样，应该适当组合。</p>
+</blockquote>
+<hr>
+<h4 id="9-Backtest-–-Signal-or-Overfitting"><a href="#9-Backtest-–-Signal-or-Overfitting" class="headerlink" title="9 Backtest – Signal or Overfitting?"></a><span id="9">9 Backtest – Signal or Overfitting?</span></h4><p>ten fold cross-validation, regularization, and prior probability. breaks the data into ten sets of size n/10, trains the model on nine datasets, and tests on one, then repeats the process ten times and takes the mean accuracy</p>
+<p>If possible, it is better to test the model on a wider universe, where it should have a higher Sharpe</p>
+<ul>
+<li>Cross-validate on different instruments</li>
+<li>Make the model elegant</li>
+<li>Minimize parameters and operations</li>
+</ul>
+<hr>
+<h4 id="10-Controlling-Biases"><a href="#10-Controlling-Biases" class="headerlink" title="10 Controlling Biases"></a>10 Controlling Biases</h4><p>There are two important sources of systematic bias: look-ahead bias and data mining.</p>
+<p>Any signal keyed off the occurrence datetime instead of the arrival datetime will ignore the real-world delays associated with getting the data, which may result in unrealistic simulations.</p>
+<p>global strategies is the failure to record the time zone in which the data is timestamped.</p>
+<p>quantitative investors should accept only historical data that is dual timestamped and thoroughly vet any data source that is subject to frequent revisions.</p>
+<p><em>Data Mining</em></p>
+<blockquote>
+<p>分离样本集，a time-series holdout or an asset holdout<br>After the holdout is incorporated into the backtest, a separate backtest is conducted solely on the holdout to vali- date whether the performance is consistent<br>should be no country, industry, size, or liquidity bias in the hold- out relative to the overall asset universe.</p>
+</blockquote>
+<p><em>Storytelling</em><br>the tendency to fit an unverifiable story to justify performance.</p>
+<p><em>Herding Bias</em><br>Herding is the propensity of investors to crowd into the same positions and has been identified as a key driver of financial bubbles.</p>
+<hr>
+<h4 id="11-The-Triple-Axis-Plan"><a href="#11-The-Triple-Axis-Plan" class="headerlink" title="11 The Triple-Axis Plan"></a><span id="11">11 The Triple-Axis Plan</span></h4><p>TAP is really just a tool to organize the complex, multidimensional alpha space.</p>
+<p>need a model to structure your search</p>
+<ul>
+<li>Ideas &amp; Datasets</li>
+<li>Performance Parameters</li>
+<li>and Regions &amp; Universes.</li>
+</ul>
+<p><img src="/2020/01/12/Finding-Alphas-1/TAP.jpg" alt="pic"><br>As a result, it can provide a quant with greater clarity and insight into the complex alpha space.</p>
+<hr>
+<h4 id="12-Techniques-for-Improving-the-Robustness-of-Alphas"><a href="#12-Techniques-for-Improving-the-Robustness-of-Alphas" class="headerlink" title="12 Techniques for Improving the Robustness of Alphas"></a><span id="12">12 Techniques for Improving the Robustness of Alphas</span></h4><p>A robust alpha should have the following properties:</p>
+<ul>
+<li><strong>Invariance</strong></li>
+<li><strong>Robustness</strong> should not have excessively sharp declines in any of its performance benchmarks</li>
+</ul>
+<p>Methodologies for robustness improvement can be classified into three categories: ordering methods, approximation to normal distribution, and limiting methods.</p>
+<p>An ordinal scale of measurement is one that conveys order alone. These scales indicate only that one value is greater or less than another, so differences among ranks do not have meaning.</p>
+<p>alphas based on nonparametric methodologies by nature require fewer assumptions and control parameters than their parametric alternatives.</p>
+<p><em>Ranking Quantiles approximation</em><br>least quantile of squares (LQS) ： ordinary least squares regression may be unstable for nonstationary and/or nonlinear inputs.</p>
+<p><em>Approximation to Normal Distribution</em></p>
+<ul>
+<li><strong>Fisher Transform formula:</strong> If F(x) is the Fisher transformation of x and N is the sample size, then F(x) approximately follows a normal distribution with stand- ard error1/ sqrt（N-3)</li>
+<li><strong>Z-scoring</strong>: z=(x-u)/sigma</li>
+</ul>
+<p><em>Limiting Methods</em>: one aim of robust methods is to reduce the impact of outliers.</p>
+<ul>
+<li>simply remove a certain fraction of the data.</li>
+<li>Winsorizing is simi- lar to trimming, but we replace the extreme values with cutoff values rather than throwing them out.</li>
+<li>k-trimmed mean: trim a given proportion α from both ends of the dataset and then take the mean</li>
+<li>k-winsorized mean: replace a proportion k from both ends</li>
+</ul>
+<p>roughly normal but contaminated with outli- ers and heavy tails. The methods can produce misleading results if they are applied to data that is inherently skewed or if a large proportion of the data is identical in value.</p>
+<blockquote>
+<p>观察alpha值的分布（尽可能偏正态，不要有偏）<br>输入的data也一样</p>
+</blockquote>
+<hr>
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><ul>
+<li><a href="/download/Finding_Alphas__A_Quantitative_Approach_to_Building_Trading_Strategies-Igor_Tulchinsky_et_al.pdf"><em>Finding Alphas: A Quantitative Approach to Building Trading Strategies (2th).Igor_Tulchinsky_et_al. (2020)</em></a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Alpha/" rel="tag"># Alpha</a>
+          
+            <a href="/tags/%E9%87%8F%E5%8C%96%E5%88%86%E4%BA%AB/" rel="tag"># 量化分享</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/04/Arthur-1/" rel="next" title="叔本华：《人生的智慧》">
+                <i class="fa fa-chevron-left"></i> 叔本华：《人生的智慧》
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/me.jpg"
+                alt="陈小米MC" />
+            
+              <p class="site-author-name" itemprop="name">陈小米MC</p>
+              <p class="site-description motion-element" itemprop="description">See you later, alligator.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:miranda0408@126.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/miranda-0408/activities" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-heartbeat"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#PART-I-INTRODUCTION"><span class="nav-number">1.</span> <span class="nav-text">PART I INTRODUCTION</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Introduction-to-Alpha-Design"><span class="nav-number">1.1.</span> <span class="nav-text">1 Introduction to Alpha Design</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Perspectives-on-Alpha-Research"><span class="nav-number">1.2.</span> <span class="nav-text">2 Perspectives on Alpha Research</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-Cutting-Losses"><span class="nav-number">1.3.</span> <span class="nav-text">3 Cutting Losses</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PART-II-DESIGN-AND-EVALUATION"><span class="nav-number">2.</span> <span class="nav-text">PART II DESIGN AND EVALUATION</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-Alpha-Design"><span class="nav-number">2.1.</span> <span class="nav-text">4 Alpha Design</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Data"><span class="nav-number">2.1.1.</span> <span class="nav-text">Data</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Universe"><span class="nav-number">2.1.2.</span> <span class="nav-text">Universe</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Freq"><span class="nav-number">2.1.3.</span> <span class="nav-text">Freq</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Alpha-Value"><span class="nav-number">2.1.4.</span> <span class="nav-text">Alpha Value</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Evaluate-Alpha"><span class="nav-number">2.1.5.</span> <span class="nav-text">Evaluate Alpha</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-How-to-Develop-an-Alpha-A-Case-Study"><span class="nav-number">2.2.</span> <span class="nav-text">5 How to Develop an Alpha: A Case Study</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-Data-and-Alpha-Design"><span class="nav-number">2.3.</span> <span class="nav-text">6 Data and Alpha Design</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-Turnover"><span class="nav-number">2.4.</span> <span class="nav-text">7 Turnover</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-Alpha-Correlation"><span class="nav-number">2.5.</span> <span class="nav-text">8 Alpha Correlation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9-Backtest-–-Signal-or-Overfitting"><span class="nav-number">2.6.</span> <span class="nav-text">9 Backtest – Signal or Overfitting?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#10-Controlling-Biases"><span class="nav-number">2.7.</span> <span class="nav-text">10 Controlling Biases</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#11-The-Triple-Axis-Plan"><span class="nav-number">2.8.</span> <span class="nav-text">11 The Triple-Axis Plan</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#12-Techniques-for-Improving-the-Robustness-of-Alphas"><span class="nav-number">2.9.</span> <span class="nav-text">12 Techniques for Improving the Robustness of Alphas</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">3.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">陈小米MC</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">6.2k</span>
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数: <span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
